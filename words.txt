@@ -7,7 +7,7 @@ Grape
 Image
 Juice
 Knife
-Lance
+Money
 Mango
 Nurse
 Ocean

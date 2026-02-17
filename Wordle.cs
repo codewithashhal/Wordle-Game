@@ -1,6 +1,6 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices.Marshalling;
+// using System.ComponentModel.DataAnnotations;
+// using System.Runtime.InteropServices.Marshalling;
 class Wordle
 {
     private string? words;
@@ -19,8 +19,7 @@ class Wordle
 
     public bool validate(string input)
     {
-        string path = "words.txt"; // File name (same folder as program)
-
+        string path = "words.txt"; 
         if (File.Exists(path))
         {
             string[] words = File.ReadAllLines(path);
@@ -39,38 +38,25 @@ class Wordle
 
     public void calculate(string input)
     {
-        
-        for (int i = 0; i < input.Length; i++)
+        int [] count=new int[26];
+
+        for(int i = 0; i < comp.Length; i++)
         {
-            bool found = false;
+            int index = comp[i] - 'a';
+            count[index]++;
+        }
+        
+        string[] result = new string[input.Length];
+
+        for (int i = 0 ; i < input.Length; i++)
+        {
             if (comp[i] == input[i])
             {
-                Console.WriteLine("Green " + comp[i]);
+                result[i] = "Green";
+                count[input[i] - 'a']--;
             }
-            else
-            {
-                for (int j = 0; j < input.Length; j++)
-                {
-                    
-                    if (input[i] != comp[j])
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        Console.WriteLine("Yellow " + comp[j]);
-                        found = true;   
-                    }
-                }
-                if (!found)
-                {
-                    Console.WriteLine("Grey");
-                }
-            }
+        } 
         }
-
-    }
-}
 class Program
 {
     static void Main()
@@ -94,6 +80,5 @@ class Program
 
         w1.calculate(word);
     }
-
-
+}
 }
