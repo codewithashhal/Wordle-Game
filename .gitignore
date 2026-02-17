@@ -1,9 +1,0 @@
-# Ignore build folders
-bin/
-obj/
-
-# Ignore Visual Studio files
-.vs/
-
-# Ignore logs
-*.log
