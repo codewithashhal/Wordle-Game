@@ -8,3 +8,6 @@ obj/
 # Ignore logs
 *.log
 Ai.cs
+
+FirstCSharp.csproj
+FirstCSharp.sln
