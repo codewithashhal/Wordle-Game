@@ -24,7 +24,8 @@ class Wordle
     {
         if (input.Length != 5 || string.IsNullOrEmpty(input)) return false;
 
-        foreach (char x in input) {
+        foreach (char x in input)
+        {
             if (!char.IsLetter(x)) return false;
         }
         return true;
@@ -36,18 +37,14 @@ class Wordle
 
         input = input.ToLower();
         comp = comp.ToLower();
-
-        int[] count = new int[26]; 
+        int[] count = new int[26];
 
         //taake hum comp mein check karlein k dupicates hain ya nhi aur nke count ko store karlein
-        for (int i = 0; i < comp.Length; i++)
-        {
-            count[comp[i] - 'a']++;
-        }
+        for (int i = 0; i < comp.Length; i++) count[comp[i] - 'a']++;
 
         string[] result = new string[comp.Length];
 
-        // green ki condition check karne k liye
+        // Sab ki condition check karne k liye
         for (int i = 0; i < comp.Length; i++)
         {
             if (input[i] == comp[i])
@@ -55,21 +52,12 @@ class Wordle
                 result[i] = "Green";
                 count[input[i] - 'a']--; //taake humaare input se uska count kam hojaye
             }
-        }
-
-        //agar green nhi hai toh phir yeh check karte hain
-        for (int i = 0; i < comp.Length; i++)
-        {
-            if (result[i] != null) continue; //kiunke agar green hoga toh null nhi hoga
-            if (count[input[i] - 'a'] > 0)
+            else if (count[input[i] - 'a'] > 0)
             {
                 result[i] = "Yellow";
                 count[input[i] - 'a']--;
             }
-            else
-            {
-                result[i] = "Grey";
-            }
+            else result[i] = "Grey";
         }
         return result;
     }
@@ -80,15 +68,15 @@ class Wordle
         for (int i = 0; i < input.Length; i++)
         {
             Console.Write(input[i] + " ");
-            if (input[i] == "Green") {cnt++;}
-            else {cnt = 0;}
+            if (input[i] == "Green") { cnt++; }
+            else { cnt = 0; }
         }
         Console.WriteLine();
 
         if (cnt == input.Length)
-            {
-                Console.WriteLine("You have won the Game");
-            }
+        {
+            Console.WriteLine("You have won the Game");
+        }
     }
 }
 
@@ -100,7 +88,8 @@ class Program
 
         w1.randomInput();
         // Console.WriteLine(secret);
-        for (int i = 0; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++)
+        {
             Console.WriteLine("Enter a word: ");
 
             string? word = Console.ReadLine();
