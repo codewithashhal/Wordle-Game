@@ -1,106 +1,143 @@
 using System;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.InteropServices.Marshalling;
+using System.IO;
 
-class Wordle
+namespace wordle
 {
-    private string[] words;
-    private string comp = "";
-    private Random random = new Random();
 
-    public Wordle()
+    abstract class WordleBank      
     {
-        if (File.Exists("words.txt"))
-            words = File.ReadAllLines("words.txt");
-    }
+        private Random random = new Random(); 
+        protected string[] words;
+        protected string comp;
 
-    public void randomInput()
-    {
-        int number = random.Next(0, words.Length);
-        comp = words[number].ToLower();
-    }
+        // 3. CONSTRUCTOR CHAINING — default ctor chained ctor ko call karta hai
+        
 
-    public bool validate(string input)
-    {
-        if (input.Length != 5 || string.IsNullOrEmpty(input)) return false;
-
-        foreach (char x in input)
+        public WordleBank()
         {
-            if (!char.IsLetter(x)) return false;
+            // FILE  HANDLING !!!!
+
+            if (File.Exists("alfaz.txt"))
+                words = File.ReadAllLines("alfaz.txt");
+            else
+                words = new string[] { "apple", "bread", "cloud" };
         }
-        return true;
+
+        public string GetRandomWord()
+        {
+            if (words == null || words.Length == 0)
+                return "apple";
+
+            int number = random.Next(0, words.Length);
+            comp = words[number].ToLower();
+            return comp;
+        }
+
+        // 4. ABSTRACT METHOD — har child class apna DisplayInfo degi
+        public abstract void DisplayInfo();
     }
 
-    public string[] calculate(string input)
+    class WordValidator : WordleBank
     {
-        if (string.IsNullOrEmpty(input)) return [];
-
-        input = input.ToLower();
-        comp = comp.ToLower();
-        int[] count = new int[26];
-
-        //taake hum comp mein check karlein k dupicates hain ya nhi aur nke count ko store karlein
-        for (int i = 0; i < comp.Length; i++) count[comp[i] - 'a']++;
-
-        string[] result = new string[comp.Length];
-
-        // Sab ki condition check karne k liye
-        for (int i = 0; i < comp.Length; i++)
+        public WordValidator(string secretWord)
         {
-            if (input[i] == comp[i])
+            comp = secretWord;
+        }
+
+        public bool Validate(string input)
+        {
+            if (string.IsNullOrEmpty(input) || input.Length != 5)
+                return false;
+
+            foreach (char x in input)
+                if (!char.IsLetter(x))
+                    return false;
+
+            return true;
+        }
+        public override void DisplayInfo()
+        {
+            Console.WriteLine("[WordValidator] Validates 5 letter alphabetic input.");
+        }
+    }
+
+    // Wordle.cs mein WordleBank class ke baad add karo
+    class WordPicker : WordleBank
+    {
+        public override void DisplayInfo()
+        {
+            Console.WriteLine("[WordPicker] Loads words and picks randomly.");
+        }
+    }
+
+    class Calculation : WordleBank
+    {
+        public Calculation(string secretWord)
+        {
+            comp = secretWord;
+        }
+
+        public string[] Calculate(string input)
+        {
+            if (string.IsNullOrEmpty(input))
+                return new string[0];
+
+            input = input.ToLower();
+            string[] result = new string[5];
+            int[] count = new int[26];
+
+            for (int i = 0; i < 5; i++)
+                count[comp[i] - 'a']++;
+
+            for (int i = 0; i < 5; i++)
             {
-                result[i] = "Green";
-                count[input[i] - 'a']--; //taake humaare input se uska count kam hojaye
+                if (input[i] == comp[i])
+                {
+                    result[i] = "Green";
+                    count[input[i] - 'a']--;
+                }
             }
-            else if (count[input[i] - 'a'] > 0)
+
+            for (int i = 0; i < 5; i++)
             {
-                result[i] = "Yellow";
-                count[input[i] - 'a']--;
+                if (result[i] == "Green") continue;
+                // Input ka index count k array mein 1 h to yellow warna gray
+                int index = input[i] - 'a';
+                if (count[index] > 0)
+                {
+                    result[i] = "Yellow";
+                    count[index]--;
+                }
+                else
+                {
+                    result[i] = "Grey";
+                }
             }
-            else result[i] = "Grey";
-        }
-        return result;
-    }
 
-    public void check_victory(string[] input)
-    {
-        int cnt = 0;
-        for (int i = 0; i < input.Length; i++)
+            return result;
+        }
+
+        public string GetHint(int value)
         {
-            Console.Write(input[i] + " ");
-            if (input[i] == "Green") { cnt++; }
-            else { cnt = 0; }
-        }
-        Console.WriteLine();
+            return $"Hint: Position {value + 1} is '{char.ToUpper(comp[value])}'.";
+        }   
 
-        if (cnt == input.Length)
+        public bool CheckVictory(string[] result)
         {
-            Console.WriteLine("You have won the Game");
+            int cnt = 0;
+            foreach (string color in result)
+                if (color == "Green") 
+                {
+                    cnt++;}
+
+            return (cnt == result.Length && result.Length > 0);
         }
-    }
-}
 
-class Program
-{
-    static void Main()
-    {
-        Wordle w1 = new Wordle();
-
-        w1.randomInput();
-        // Console.WriteLine(secret);
-        for (int i = 0; i < 5; i++)
+        // Abstract method ka implementation
+        public override void DisplayInfo()
         {
-            Console.WriteLine("Enter a word: ");
-
-            string? word = Console.ReadLine();
-            if (string.IsNullOrEmpty(word) || !w1.validate(word))
-            {
-                Console.WriteLine("galat");
-                i--;
-                continue;
-            }
-            string[] ans = w1.calculate(word);
-            w1.check_victory(ans);
+            Console.WriteLine("[Calculation] Computes Green/Yellow/Grey feedback.");
         }
+
     }
 }
