@@ -57,6 +57,21 @@ The project uses an external text file named **Alfaaz.txt** that contains a coll
 * Modular Programming
 * File Handling
 
+## Screenshots
+
+### Home Page
+
+![Home Page](homepage.png)
+
+### Gameplay
+
+![Gameplay](gameplay.png)
+
+### How To Play
+
+![How To Play](how_to_play.png)
+
+
 ## Learning Outcomes
 
 This project provided practical experience in:
